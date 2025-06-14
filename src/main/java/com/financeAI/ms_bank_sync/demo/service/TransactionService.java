@@ -1,51 +1,42 @@
 package com.financeAI.ms_bank_sync.demo.service;
 
 import com.financeAI.ms_bank_sync.demo.entity.Transaction;
+import com.financeAI.ms_bank_sync.demo.mapper.TransactionMapper;
 import com.financeAI.ms_bank_sync.demo.model.StatementNu;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
+import com.financeAI.ms_bank_sync.demo.parser.CsvStatementParser;
+import com.financeAI.ms_bank_sync.demo.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
+
 import java.util.List;
 
 @Service
 public class TransactionService {
-    public void uploadFile(MultipartFile file){
-        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            CsvToBean<StatementNu> csvToBean = new CsvToBeanBuilder<StatementNu>(reader)
-                    .withType(StatementNu.class)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .build();
+    @Autowired
+    private TransactionRepository transactionRepository;
+    @Autowired
+    private CsvStatementParser parser;
+    @Autowired
+    private TransactionMapper transactionMapper;
 
-            List<StatementNu> registros = csvToBean.parse();
 
-            for (StatementNu record : registros) {
-                System.out.println(
-                        String.format("data: %s, valor: %s, identificador: %s, descrição: %s",
-                                record.getData(),
-                                record.getValor(),
-                                record.getIdentificacao(),
-                                record.getDescricao()
-                        )
-                );
-                Transaction transaction= new Transaction();
-                transaction.setId("");
-                transaction.setName("");
-                transaction.getType();
-                transaction.setAmount();
-                transaction.setCategory();
-                transaction.setPaymentMethod();
-                transaction.setDate();
-                transaction.setCreatedAt();
-                transaction.setUpdatedAt();
-                transaction.setUserId();
-            }
+    public void uploadFile(MultipartFile file) {
+        try {
+            // Etapa 1: parse
+            List<StatementNu> registros = parser.parse(file);
+
+            // Etapa 2: mapeia para transactions (aqui já valida também)
+            List<Transaction> transactions = registros.stream()
+                    .map(transactionMapper::fillTransaction)
+                    .toList();
+            transactionRepository.saveAll(transactions);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Falha ao importar arquivo. Nenhuma transação foi salva.", e);
         }
     }
+
+
 }
