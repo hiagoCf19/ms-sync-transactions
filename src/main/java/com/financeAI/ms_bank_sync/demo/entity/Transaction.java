@@ -3,7 +3,6 @@ package com.financeAI.ms_bank_sync.demo.entity;
 import com.financeAI.ms_bank_sync.demo.enums.TransactionCategory;
 import com.financeAI.ms_bank_sync.demo.enums.TransactionPaymentMethod;
 import com.financeAI.ms_bank_sync.demo.enums.TransactionType;
-import com.financeAI.ms_bank_sync.demo.model.StatementNu;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Transaction")
+@Table(name = "transaction")
 @Getter
 @Setter
 public class Transaction {
@@ -37,19 +36,19 @@ public class Transaction {
     private TransactionCategory category;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "paymentMethod", nullable = false)
+    @Column(name = "payment_method", nullable = false)
     private TransactionPaymentMethod paymentMethod;
 
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false)
+    @Column(name= "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(name= "updated_at",nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
+    @Column(name= "user_id",nullable = false)
     private String userId;
 
 

@@ -18,8 +18,8 @@ public class UploadFile {
     private TransactionService transactionService;
 
     @PostMapping("/csv")
-    public void uploadCsv(@RequestParam("file") MultipartFile file) {
-        transactionService.uploadFile(file);
+    public void uploadCsv(@RequestParam("file") MultipartFile file, @RequestParam String userId) {
+        transactionService.uploadFile(file, userId);
 
 
     }

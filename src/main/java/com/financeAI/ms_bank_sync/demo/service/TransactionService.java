@@ -22,15 +22,16 @@ public class TransactionService {
     private TransactionMapper transactionMapper;
 
 
-    public void uploadFile(MultipartFile file) {
+    public void uploadFile(MultipartFile file, String userId) {
         try {
             // Etapa 1: parse
             List<StatementNu> registros = parser.parse(file);
 
             // Etapa 2: mapeia para transactions (aqui já valida também)
             List<Transaction> transactions = registros.stream()
-                    .map(transactionMapper::fillTransaction)
+                    .map(nu -> transactionMapper.fillTransaction(nu, userId))
                     .toList();
+
             transactionRepository.saveAll(transactions);
 
         } catch (Exception e) {

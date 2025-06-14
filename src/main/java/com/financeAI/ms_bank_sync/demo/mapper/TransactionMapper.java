@@ -14,11 +14,11 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class TransactionMapper {
-    public Transaction fillTransaction(StatementNu nu){
+    public Transaction fillTransaction(StatementNu nu, String userid){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate data = LocalDate.parse(nu.getData(), formatter);
         Transaction transaction= new Transaction();
-        transaction.setType( determineTransactionType(nu));
+        transaction.setType(determineTransactionType(nu));
         transaction.setAmount(nu.getValor());
         transaction.setDate(data);
         transaction.setId(nu.getIdentificacao());
@@ -27,6 +27,7 @@ public class TransactionMapper {
         transaction.setPaymentMethod(determinePaymentMethod(nu));
         transaction.setUpdatedAt(LocalDateTime.now());
         transaction.setCreatedAt(LocalDateTime.now());
+        transaction.setUserId(userid);
         return transaction;
 
     }
